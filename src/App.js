@@ -1,23 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Navbar from "./Components/Navbar";
+import Search from "./Components/Search";
+import UserList from "./Components/UserList";
 
 function App() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchUsers = async () => {
+      let url = "https://api.github.com/users";
+      if (query) {
+        url = `https://api.github.com/search/users?q=${query}`;
+      }
+      const response = await fetch(url);
+      const data = await response.json();
+      if (query) {
+        setUsers(data.items);
+      } else {
+        setUsers(data);
+      }
+      setLoading(false);
+    };
+
+    fetchUsers();
+  }, [query]);
+
+  const handleSearch = (searchQuery, setSearchQuery) => {
+    if (searchQuery.trim() === "") {
+      setQuery("");
+    } else {
+      setQuery(searchQuery);
+    }
+    setSearchQuery("");
+  };
+
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar />
+      <div className="container mt-3">
+        <Search onSearch={handleSearch} />
+        <UserList users={users} loading={loading} />
+      </div>
     </div>
   );
 }
