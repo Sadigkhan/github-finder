@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 function Search(props) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [visible,setVisible]=useState(false);
 
   const handleInputChange = (event) => {
     setSearchQuery(event.target.value);
@@ -10,15 +11,23 @@ function Search(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     props.onSearch(searchQuery,setSearchQuery);
+    handleVisible();
   };
 
+
+
+
+  const handleVisible = (event) =>{
+    setVisible(true);
+  }
 
   const handleClear = () => {
     setSearchQuery("");
     props.onSearch("", setSearchQuery);
+    setVisible(false);
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} >
       <div className="input-group mb-3">
         <input
           type="text"
@@ -33,7 +42,11 @@ function Search(props) {
           </button>
         </div>
       </div>
-      <button className="btn btn-outline-danger btn-block mb-3" type="submit" onClick={handleClear}>Clear Browsing Data</button>
+      {
+          visible && (
+             <button className="btn btn-outline-danger btn-block mb-3" type="submit" onClick={handleClear}>Clear Browsing Data</button>
+          )
+      }
     </form>
   );
 }
